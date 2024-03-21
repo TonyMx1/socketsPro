@@ -1,27 +1,52 @@
+const Usuario=require("../modelos/usuario");
+const Producto=require("../modelos/products");
+
 function socket(io) {
     io.on("connection", (socket) => {
-        socket.on("pregunta", (pregunta) => {
-            var respuesta = obtenerRespuesta(pregunta);
-            socket.emit("respuesta", respuesta);
+        //MOSTRAR USUARIOS
+        mostrarUsuarios();
+        async function mostrarUsuarios(){
+            const usuarios=await Usuario.find();
+            io.emit("servidorEnviarUsuarios", usuarios);
+        }
+
+        //GUARDAR USUARIO
+        socket.on("clienteGuardarUsuario", async (usuario)=>{
+            try{
+            await new Usuario(usuario).save();
+            io.emit("servidorUsuarioGuardado","Usuario guardado");
+        }
+        catch(err){
+            console.log("Error al registrar al usuario "+err);
+        }
+        });
+
+        // Mostrar Productos
+        mostrarProductos();
+        async function mostrarProductos() {
+            try {
+                const productos = await Producto.find();
+                io.emit("servidorEnviarProductos", productos);
+            } catch (error) {
+                console.log("Error al insertar producto" +err);
+            }
+        }
+
+        // Guardar Productos
+        socket.on("clienteGuardarPro", async (producto) => {
+            try {
+                await new Producto(producto).save();
+                io.emit("servidorProductoGuardado", "Producto guardado");
+                console.log("Producto guardado");
+            } catch (error) {
+                console.log(error);
+            }
         });
     });
 }
 
-function obtenerRespuesta(pregunta) {
-    switch (pregunta) {
-        case "1":
-            return "Busca 'cmd' en el buscador de windows y selecciona la opcion de ejecutar como administrador";
-        case "2":
-            return "1. BitDefender, 2. McAfee 3.Avast";
-        case "3":
-            return "Puedes aplicar una limpieza de archivos o desfragmentar tu disco duro con regularidad";
-        case "4":
-            return "Si, puede llegar a afectar la vida útil de una memoria ya que tiene un poco de corriente y al hacer eso puede crear un corto circuito y hacer que falle";
-        case "5":
-            return "Si, el que recomiendo sería el CCleaner, borra todos los archivos inecesarios de tu equipo.";
-        default:
-            return "Lo siento, no tengo una respuesta para esa pregunta.";
-    }
-}
+//FIN IO.ON
+
+
 
 module.exports = socket;

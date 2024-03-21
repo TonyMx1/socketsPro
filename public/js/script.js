@@ -1,26 +1,60 @@
-const socket=io();
-//console.log(socket);
+const socket = io();
+var mensajeDiv = document.getElementById("mensaje");
+var datos = document.getElementById("datos");
 
-//socket.on("saludo", ()=>{
-  //  console.log("Estoy recibiendo tu mensaje");
-//});
-
-//http://localhost:3000/socket.io/socket.io.min.js
-
-var enviarDatos=document.getElementById("enviarDatos");
-enviarDatos.addEventListener("submit",(e)=>{
-    e.preventDefault();
-    var pregunta = document.getElementById("pregunta").value;
-    var chat = document.getElementById("chat");
-
-    // Enviar la pregunta al servidor
-    socket.emit("pregunta", pregunta);
-
-    // Limpiar el contenido del chat antes de recibir la respuesta
-    chat.innerHTML = "";
-
-    // Escuchar la respuesta del servidor y agregarla al chat
-    socket.on("respuesta", (respuesta) => {
-        chat.innerHTML = respuesta;
+//Mostrar datos de MongoDB
+socket.on("servidorEnviarUsuarios", (usuarios)=>{
+    var tr="";
+    usuarios.forEach((usuario,idLocal)=>{
+      tr=tr+`
+      <tr>
+        <td>${idLocal+1}</td>
+        <td>${usuario.nombre}</td>
+        <td>${usuario.usuario}</td>
+        <td>${usuario.password}</td>
+        <td>
+            <a href="#" onclick="editarUsuario('${usuario._id}')">Editar</a> / 
+            <a href="#" onclick="borrarUsuario('${usuario._id}')">Borrar</a>
+        </td>
+      </tr>
+      `;
     });
+    datos.innerHTML=tr;
 });
+
+//Guardar datos de MongoDB
+
+
+var enviarDatos = document.getElementById("enviarDatos");
+
+enviarDatos.addEventListener("submit", (e)=>{
+    e.preventDefault();
+    var usuario = {
+        nombre: document.getElementById("nombre").value,
+        usuario: document.getElementById("usuario").value,
+        password: document.getElementById("password").value
+    }
+    socket.emit("clienteGuardarUsuario", usuario);
+    socket.on("servidorUsuarioGuardado",(mensaje)=>{
+      console.log(mensaje);
+      mensajeDiv.innerHTML=mensaje;
+      setTimeout(()=>{mensajeDiv.innerHTML},3000);
+      //REINICIAR EL FORMULARIO
+      document.getElementById("nombre").value = "";
+      document.getElementById("usuario").value = "";
+      document.getElementById("password").value = "";
+      document.getElementById("nombre").focus()
+      
+    });
+    });
+
+
+//Modificar un registro de MongoDB
+function editarUsuario(id){
+  console.log(id);
+}
+
+//Eliminar un registro de MongoDB
+function borrarUsuario(id){
+  console.log(id);
+}
