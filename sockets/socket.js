@@ -58,9 +58,16 @@ function socket(io) {
         // Guardar Productos
         socket.on("clienteGuardarPro", async (producto) => {
             try {
-                await new Producto(producto).save();
-                io.emit("servidorProductoGuardado", "Producto guardado");
-                console.log("Producto guardado");
+                if (producto.id && producto.id !== "") {
+                    await Producto.findByIdAndUpdate(producto.id, producto);
+                    io.emit("servidorProductoGuardado", "Producto actualizado");
+                    console.log("Producto actualizado");
+                } else {
+                    await new Producto(producto).save();
+                    io.emit("servidorProductoGuardado", "Producto guardado");
+                    console.log("Producto guardado");
+                }
+                mostrarProductos();
             } catch (error) {
                 console.log(error);
             }
