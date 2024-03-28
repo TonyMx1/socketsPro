@@ -23,13 +23,11 @@ socket.on("servidorEnviarUsuarios", (usuarios)=>{
 });
 
 //Guardar datos de MongoDB
-
-
 var enviarDatos = document.getElementById("enviarDatos");
-
 enviarDatos.addEventListener("submit", (e)=>{
     e.preventDefault();
     var usuario = {
+        id: document.getElementById("id").value,
         nombre: document.getElementById("nombre").value,
         usuario: document.getElementById("usuario").value,
         password: document.getElementById("password").value
@@ -38,7 +36,7 @@ enviarDatos.addEventListener("submit", (e)=>{
     socket.on("servidorUsuarioGuardado",(mensaje)=>{
       console.log(mensaje);
       mensajeDiv.innerHTML=mensaje;
-      setTimeout(()=>{mensajeDiv.innerHTML},3000);
+      setTimeout(()=>{mensajeDiv.innerHTML=""},3000);
       //REINICIAR EL FORMULARIO
       document.getElementById("nombre").value = "";
       document.getElementById("usuario").value = "";
@@ -52,9 +50,26 @@ enviarDatos.addEventListener("submit", (e)=>{
 //Modificar un registro de MongoDB
 function editarUsuario(id){
   console.log(id);
+  socket.emit("clienteObtenerUsuarioPorID",id);
 }
+
+socket.on("servidorObtenerUsuarioPorID", (usuario) => {
+  console.log(usuario);
+  document.getElementById("id").value = usuario._id;
+  document.getElementById("nombre").value = usuario.nombre;
+  document.getElementById("usuario").value = usuario.usuario;
+  document.getElementById("password").value = usuario.password;
+  document.getElementById("id").setAttribute("data-usuario-id", usuario._id);
+  document.getElementById("txtNuevoUsuario").innerHTML = "Editar usuario";
+  document.getElementById("txtGuardarUsuario").innerHTML = "Guardar cambios";
+});
 
 //Eliminar un registro de MongoDB
 function borrarUsuario(id){
   console.log(id);
+  socket.emit("clienteBorrarUsuario",id);
+  document.getElementById("mensaje").innerHTML="USUARIO BORRADO";
+  setTimeout(() => {mensajeDiv.innerHTML = "";}, 2000);
 }
+
+

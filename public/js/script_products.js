@@ -26,12 +26,12 @@ socket.on("servidorEnviarProductos", (productos)=>{
 });
 
 
-
 //Guardar datos en MongoDB
 var enviarDatosPro = document.getElementById("enviarDatosPro");
 enviarDatosPro.addEventListener("submit", (e) => {
     e.preventDefault();
     var producto = {
+        id: document.getElementById("id").value,
         nombre: document.getElementById("nombre").value,
         precio: document.getElementById("precio").value,
         cantidad: document.getElementById("cantidad").value
@@ -51,14 +51,27 @@ enviarDatosPro.addEventListener("submit", (e) => {
     document.getElementById("nombre").focus();
 });
 
-
-
 //Modificar Producto
 function editarProducto(id) {
     console.log(id);
+    socket.emit("clienteProductoPorID",id);
 }
+
+socket.on("servidorProductoPorID",(producto)=>{
+    console.log(producto);
+    document.getElementById("id").value=producto._id;
+    document.getElementById("nombre").value=producto.nombre;
+    document.getElementById("precio").value=producto.precio;
+    document.getElementById("cantidad").value=producto.cantidad;
+    document.getElementById("id").setAttribute("data-producto-id", producto._id);
+    document.getElementById("txtNewPro").innerHTML="Editar Producto";
+    document.getElementById("txtGuardarPro").innerHTML="GUARDAR CAMBIOS";
+});
 
 //Borrar Producto
 function borrarProducto(id) {
     console.log(id);
+    socket.emit("borrarPro",id);
+    document.getElementById("mensaje").innerHTML="PRODUCTO BORRADO DE LA BD";
+    setTimeout(() => {mensajeDiv.innerHTML = "";}, 2000);
 }

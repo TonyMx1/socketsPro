@@ -35,15 +35,16 @@
                 <form action="" id="enviarDatosPro">
                     <div class="card">
                         <div class="card-header">
-                            <h1>Nuevo producto</h1>
+                            <h1 id="txtNewPro">Nuevo producto</h1>
                         </div>
                         <div class="card-body">
+                            <input class="form-control mb-3" name="id" id="id" placeholder="ID" autofocus readonly disabled>
                             <input class="form-control mb-3" type="text" name="nombre" id="nombre" placeholder="Nombre" autofocus>
                             <input class="form-control mb-3" type="text" name="precio" id="precio" placeholder="Precio">
                             <input class="form-control mb-3" type="text" name="cantidad" id="cantidad" placeholder="Cantidad">
                         </div>
                         <div class="card-footer">
-                            <button class="form-control btn btn-primary mb-3" type="submit">Guardar Producto</button>
+                            <button id="txtGuardarPro" class="form-control btn btn-primary mb-3" type="submit">Guardar Producto</button>
                             <button class="form-control btn btn-secondary" type="reset">Borrar Datos</button>
                         </div>
                     </div>
@@ -54,7 +55,7 @@
                 <table class="table hoover">
                     <thead>
                         <tr>
-                            <th>Id</th>
+                            <th>ID</th>
                             <th>Nombre</th>
                             <th>Precio</th>
                             <th>Cantidad</th>
